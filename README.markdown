@@ -60,3 +60,6 @@ If you use this tool in your program or research, please cite:
 
 ## License
 MIT License
+
+## Interested in Contributing?
+Please contact Michael Shehata (shehatam.dev@gmail.com)
