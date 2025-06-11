@@ -294,12 +294,12 @@ st.markdown(
     .stTextArea textarea[disabled] {
         background-color: #2d3748 !important;
         border-color: #4a5568 !important;
-        color: #f7fafc !important;  /* Much brighter white text */
+        color: #f7fafc !important;
         opacity: 1 !important;
-        font-weight: 600 !important;  /* Bold font for better visibility */
-        font-size: 18px !important;  /* Slightly larger font */
+        font-weight: 600 !important;
+        font-size: 18px !important;
         line-height: 1.7 !important;
-        text-shadow: 0 0 1px rgba(255,255,255,0.5) !important;  /* Subtle text shadow */
+        text-shadow: 0 0 1px rgba(255,255,255,0.5) !important;
     }
     
     /* File uploader styling */
@@ -323,11 +323,22 @@ st.markdown(
         padding: 0.5rem 1rem !important;
         font-weight: 500 !important;
         transition: transform 0.2s ease !important;
+        min-height: 44px !important;
+        white-space: normal !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
     .stButton > button:hover {
         transform: translateY(-2px) !important;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    }
+    
+    /* Ensure button containers are visible */
+    .stButton {
+        display: block !important;
+        width: 100% !important;
     }
     
     /* Download button specific styling */
@@ -343,7 +354,7 @@ st.markdown(
         transform: translateY(-2px) !important;
     }
     
-    /* Section headers */
+    /* Section headers - FIXED */
     .section-header {
         background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
         background-clip: text;
@@ -352,6 +363,15 @@ st.markdown(
         font-size: 1.8rem;
         font-weight: 700;
         margin: 2rem 0 1rem 0;
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    /* Ensure columns are visible */
+    .stColumn {
+        color: #ffffff !important;
+        display: block !important;
+        visibility: visible !important;
     }
     
     /* Footer styling */
@@ -439,14 +459,11 @@ st.markdown(
         color: #ffffff !important;
     }
     
-    /* Column text color */
-    .stColumn {
-        color: #ffffff !important;
-    }
-    
     /* General text */
     h1, h2, h3, h4, h5, h6 {
         color: #ffffff !important;
+        display: block !important;
+        visibility: visible !important;
     }
     
     p, li, span {
@@ -456,6 +473,14 @@ st.markdown(
     /* Markdown content styling */
     .stMarkdown {
         color: #ffffff !important;
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
+        color: #ffffff !important;
+        display: block !important;
+        visibility: visible !important;
     }
     
     /* labels visiblilty */
@@ -483,17 +508,21 @@ st.markdown(
         margin-bottom: 1rem;
     }
     
-    .stContainer:empty {
-        display: none !important;
+    /* Ensure all main containers are visible */
+    div[data-testid="stVerticalBlock"] {
+        display: block !important;
+        visibility: visible !important;
     }
     
-    div[data-testid="stVerticalBlockBorderWrapper"]:empty {
-        display: none !important;
+    div[data-testid="column"] {
+        display: block !important;
+        visibility: visible !important;
     }
     
-    /* Hide empty markdown containers */
-    .stMarkdown:empty {
-        display: none !important;
+    /* Make sure button containers are always visible */
+    div[data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        visibility: visible !important;
     }
 </style>
 """,
@@ -606,16 +635,36 @@ if "input_text" not in st.session_state:
 st.markdown(
     '<h2 class="section-header">✨ Try These Examples</h2>', unsafe_allow_html=True
 )
+
+# Force visibility for this section
+st.markdown(
+    '<div style="display: block !important; visibility: visible !important;">',
+    unsafe_allow_html=True,
+)
+
 col1, col2, col3 = st.columns(3)
 
 example_texts = [("ⲡⲛⲟⲩⲧⲉ", "God"), ("ⲧⲉⲕⲕⲗⲏⲥⲓⲁ", "Church"), ("ⲁⲅⲁⲡⲏ", "Love")]
 
 for i, (coptic, english) in enumerate(example_texts):
     with [col1, col2, col3][i]:
+        button_html = f"""
+        <div style="display: block !important; visibility: visible !important; margin-bottom: 1rem;">
+        """
+        st.markdown(button_html, unsafe_allow_html=True)
+
         if st.button(
-            f"{coptic}\n({english})", key=f"example_{i}", use_container_width=True
+            f"{coptic}\n({english})",
+            key=f"example_{i}",
+            use_container_width=True,
+            help=f"Click to load example: {coptic} ({english})",
         ):
             st.session_state.input_text = coptic
+            st.rerun()  # Force a rerun to update the input field
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)  # Close the forced visibility div
 
 # MAIN INTERFACE
 st.markdown(
