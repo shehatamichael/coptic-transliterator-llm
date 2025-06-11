@@ -711,11 +711,6 @@ with main_col1:
                 # Update session stats
                 st.session_state.transliteration_count += 1
 
-                # Clear progress indicators
-                time.sleep(1)
-                progress_bar.empty()
-                status_text.empty()
-
                 # Store results in session state to display them in the right column
                 st.session_state.results = {
                     "rule_based": rule_based_output,
@@ -724,8 +719,10 @@ with main_col1:
                     "has_results": True,
                 }
 
-                # Trigger rerun to show results
-                st.rerun()
+                # Clear progress indicators
+                time.sleep(1)
+                progress_bar.empty()
+                status_text.empty()
 
             except Exception as e:
                 progress_bar.empty()
