@@ -1,20 +1,20 @@
-# 🔤 Coptic Transliteration Tool with LLM
+# 🔤 Coptic Transliteration Tool with AI Enhancement
 
-> A modern web-based tool for transliterating Coptic text to Latin script, perfect for English speakers following church services.
+> A modern web-based tool for transliterating Coptic text to Latin script, enhanced with Google's Gemini 2.0 Flash Lite AI model.
 
-<!-- TODO: Update with actual images from netlify -->
-<!-- [![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/your-site-name/deploys)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) -->
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
 ## ✨ Features
 
 - **🖊️ Flexible Input**: Enter Coptic text directly or upload `.txt` files
-- **🤖 AI-Enhanced**: Combines rule-based transliteration with LLM improvements via Hugging Face
-- **📱 User-Friendly**: Clean Streamlit interface accessible from any device  
-- **⬇️ Export Ready**: Download transliterated results as `.txt` files
-- **💰 Free to Use**: Leverages Hugging Face's free tier and Netlify hosting
+- **✨ AI-Enhanced**: Combines rule-based transliteration with Google's Gemini 2.0 Flash Lite model for superior accuracy
+- **📊 Side-by-Side Comparison**: View both rule-based and AI-enhanced results simultaneously
+- **📱 User-Friendly**: Clean, mobile-responsive Streamlit interface
+- **⬇️ Export Ready**: Download individual or combined transliteration results as `.txt` files
+- **🚀 Fast & Reliable**: Rule-based fallback ensures the tool always works
 
 ---
 
@@ -23,37 +23,42 @@
 ### Prerequisites
 
 - [Python 3.9+](https://www.python.org/downloads/)
-- [Miniconda](https://docs.conda.io/en/latest/miniconda.html) (required for Pynini)
-- [Hugging Face Account](https://huggingface.co/join) (for API access)
+- Google AI Studio API key (for AI enhancement)
 
 ### Local Setup
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/shehatamichael/coptic-transliterator-llm.git
    cd coptic-transliterator-llm
    ```
 
 2. **Create Environment**
+
    ```bash
-   conda create --name coptic-llm python=3.9
-   conda activate coptic-llm
+   python -m venv coptic-llm
+   source coptic-llm/bin/activate
    ```
 
 3. **Install Dependencies**
+
    ```bash
-   conda install -c conda-forge pynini
    pip install -r requirements.txt
    ```
 
-4. **Configure API Access**
-   - Get your [Hugging Face API key](https://huggingface.co/settings/tokens)
+4. **Configure API Access (Optional)**
+   - Get your [Google AI Studio API key](https://makersuite.google.com/app/apikey)
    - Create `.env` file:
+
      ```env
-     HF_API_KEY=your-hugging-face-api-key-here
+     GEMINI_API_KEY=your-google-ai-api-key-here
      ```
 
+   - **Note**: The tool works without an API key using rule-based transliteration
+
 5. **Launch the App**
+
    ```bash
    streamlit run app.py
    ```
@@ -76,12 +81,13 @@
    - Click "New site from Git"
    - Select your GitHub repository
 
-3. **Configure Environment Variables**
+3. **Configure Environment Variables (Optional)**
    - Go to Site settings → Build & deploy → Environment variables
-   - Add your Hugging Face API key:
+   - Add your Google AI Studio API key for AI enhancement:
+
      ```
-     Key: HF_API_KEY
-     Value: your-hugging-face-api-key-here
+     Key: GEMINI_API_KEY
+     Value: your-google-ai-api-key-here
      ```
 
 4. **Deploy**
@@ -91,9 +97,10 @@
 ### Deployment Configuration
 
 The repository includes a `netlify.toml` file that handles:
+
 - Python runtime setup
 - Dependency installation
-- Streamlit app startup
+- Streamlit app startup via Netlify Functions
 
 ---
 
@@ -101,15 +108,15 @@ The repository includes a `netlify.toml` file that handles:
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Streamlit     │    │  Rule-based      │    │  Hugging Face   │
-│   Frontend      │───▶│  Transliterator  │───▶│  LLM API        │
-│                 │    │  (Fallback)      │    │  (Enhancement)  │
+│   Streamlit     │    │  Rule-based      │    │  Google Gemini  │
+│   Frontend      │───▶│  Transliterator  │───▶│  2.0 Flash Lite │
+│                 │    │  (Always Works)  │    │  (Enhancement)  │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
-- **Frontend**: Streamlit provides the web interface
-- **Core Logic**: Rule-based transliteration from `coptic-transliterator`
-- **Enhancement**: Mixtral-8x7B model via Hugging Face API
+- **Frontend**: Streamlit provides the web interface with side-by-side comparison
+- **Core Logic**: Rule-based transliteration ensures reliability
+- **Enhancement**: Gemini 2.0 Flash Lite model via Google AI Studio API
 - **Hosting**: Netlify for free, scalable deployment
 
 ---
@@ -122,7 +129,8 @@ coptic-transliterator-llm/
 ├── transliterator.py      # Core transliteration logic
 ├── requirements.txt       # Python dependencies
 ├── netlify.toml          # Netlify deployment config
-├── .env                  # Environment variables (local)
+├── .env.example          # Environment variables template
+├── LICENSE               # MIT License
 └── README.md             # This file
 ```
 
@@ -132,35 +140,40 @@ coptic-transliterator-llm/
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `HF_API_KEY` | Hugging Face API key for LLM access | Yes |
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `GEMINI_API_KEY` | Google AI Studio API key for AI enhancement | No | Rule-based only |
 
 ### Model Configuration
 
-The default LLM model is Mixtral-8x7B. To use a different model, update the `HF_API_URL` in `app.py`:
+The tool uses Google's Gemini 2.0 Flash Lite model for AI enhancement. The model endpoint is configured in `app.py`:
 
 ```python
-HF_API_URL = "https://api-inference.huggingface.co/models/your-model-name"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite-001:generateContent"
 ```
-
-> **Note**: Ensure your chosen model is under 10GB to stay within Hugging Face's free tier limits.
 
 ---
 
 ## 🔧 Advanced Usage
 
-### Fine-tuning for Better Accuracy
-
-For improved Coptic-specific results, consider:
-
-1. **Custom Model Training**: Fine-tune Mistral-7B on Coptic datasets
-2. **Prompt Engineering**: Optimize prompts for better transliteration
-3. **Hybrid Approach**: Combine multiple models for enhanced accuracy
-
 ### API Integration
 
-The tool can be integrated into other applications via the Streamlit API or by extracting the core transliteration functions.
+You can use the core transliteration functions in your own projects:
+
+```python
+from transliterator import translit
+
+# Rule-based transliteration
+coptic_text = "ⲡⲛⲟⲩⲧⲉ"
+latin_text = translit(coptic_text)
+print(latin_text)  # Output: pnoute
+```
+
+### Customization
+
+- **Character Mappings**: Modify `char_map` in `transliterator.py`
+- **Contextual Rules**: Update `_apply_contextual_rules()` method
+- **UI Styling**: Customize CSS in `app.py`
 
 ---
 
@@ -168,51 +181,76 @@ The tool can be integrated into other applications via the Streamlit API or by e
 
 ### Free Tier Considerations
 
-- **Hugging Face**: Rate limits apply to API calls
+- **Google AI Studio**: Generous free tier with rate limits
 - **Netlify**: 300 build minutes/month, 100GB bandwidth
-- **Cold Starts**: Initial requests may be slower due to model loading
+- **Fallback**: Rule-based method always available when API is unavailable
 
 ### Accuracy Notes
 
-- Rule-based transliteration provides consistent baseline results
-- LLM enhancement improves context-aware transliteration
+- Rule-based transliteration provides consistent, fast results
+- AI enhancement improves context-aware transliteration
+- Side-by-side comparison lets users choose the best result
 - Performance varies with input complexity and model availability
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how to get started:
-
 1. **Fork the Repository**
 2. **Create a Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
+
 3. **Make Your Changes**
-4. **Submit a Pull Request**
+4. **Test Thoroughly**
+
+   ```bash
+   streamlit run app.py
+   ```
+
+5. **Submit a Pull Request**
 
 ### Development Guidelines
 
 - Follow PEP 8 for Python code style
-- Add tests for new functionality
+- Test both with and without API keys
 - Update documentation as needed
-- Ensure compatibility with free tier services
+- Ensure mobile responsiveness
+
+### Ideas for Contributions
+
+- Additional contextual transliteration rules
+- Support for other Coptic dialects
+- Batch processing for large texts
+- API endpoint creation
+- Performance optimizations
 
 ---
 
-## 📚 Citation
+## 📚 Examples
 
-If you use this tool in your research or projects, please cite:
+### Quick Examples
 
-```bibtex
-@misc{shehata2020coptic,
-  title={Coptic Transliteration Tool},
-  author={Michael Shehata},
-  year={2020},
-  institution={Montclair State University of New Jersey},
-  url={https://github.com/shehatamichael/coptic-transliterator}
-}
+| Coptic | Transliteration | Meaning |
+|--------|----------------|---------|
+| ⲡⲛⲟⲩⲧⲉ | pnoute | God |
+| ⲧⲉⲕⲕⲗⲏⲥⲓⲁ | tekklesia | Church |
+| ⲁⲅⲁⲡⲏ | agape | Love |
+| ⲙⲁⲣⲓⲁ | maria | Mary |
+
+### Usage in Code
+
+```python
+from transliterator import CopticTransliterator
+
+# Create transliterator instance
+ct = CopticTransliterator()
+
+# Transliterate text
+result = ct.translit("ⲁⲛⲟⲕ ⲟⲩⲛ ⲟⲩⲙⲁⲓⲛⲟⲩⲧⲉ")
+print(result)  # Output: anok oun oumai̇noute
 ```
 
 ---
@@ -226,20 +264,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 💬 Support & Contact
 
 - **Issues**: [GitHub Issues](https://github.com/shehatamichael/coptic-transliterator-llm/issues)
-- **Email**: shehatam.dev@gmail.com
-- **Contributions**: Pull requests welcome!
+- **Email**: <shehatam.dev@gmail.com>
+- **Pull Requests**: Contributions welcome!
 
 ---
 
 ## 🙏 Acknowledgments
 
-- Based on the original [coptic-transliterator](https://github.com/shehatamichael/coptic-transliterator) by Michael Shehata
-- Powered by [Hugging Face](https://huggingface.co/) Inference API
+- Based on the original [coptic-transliterator](https://github.com/shehatamichael/coptic-transliterator)
+- Powered by [Google AI Studio](https://makersuite.google.com/)
 - Hosted on [Netlify](https://netlify.com/)
 - Built with [Streamlit](https://streamlit.io/)
+- Special thanks to the Coptic community for feedback and support
 
 ---
 
 <div align="center">
-  <p><strong>Made with ❤️ for the Coptic community</strong></p>
+  <p><strong>Made with ❤️ for the Coptic community</strong><br>
+  <em>Preserving ancient language through modern technology</em></p>
 </div>

@@ -1,225 +1,155 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on 4/14/2020
-
-@author: michaelshehata
+Simple Coptic to Latin transliterator that doesn't use Pynini
 """
 
-import pynini
+import re
+import unicodedata
 
-# Sigma
-coptic_sigma = pynini.union("ⲁ", "Ⲁ", "ⲃ", "Ⲃ", "ⲅ", "Ⲅ", "ⲇ", "Ⲇ", "ⲉ", "Ⲉ", "ⲋ", "Ⲋ", "ⲍ", "Ⲍ", "ⲏ", "Ⲏ", 
-                            "ⲑ", "Ⲑ", "ⲓ", "Ⲓ", "ⲕ", "Ⲕ", "ⲗ", "Ⲗ", "ⲙ", "Ⲙ", "ⲛ", "Ⲛ", "ⲝ", "Ⲝ", "ⲟ", "Ⲟ", 
-                            "ⲡ", "Ⲡ", "ⲣ", "Ⲣ", "ⲥ", "Ⲥ", "ⲧ", "Ⲧ", "ⲩ", "Ⲩ", "ⲫ", "Ⲫ", "ⲭ", "Ⲭ", "ⲯ", "Ⲯ", 
-                            "ⲱ", "Ⲱ", "ϣ", "Ϣ", "ϥ", "Ϥ", "ϧ", "Ϧ", "ϩ", "Ϩ", "ϫ", "Ϫ", "ϭ", "Ϭ", "ϯ", "Ϯ")
 
-latin_sigma = pynini.union("a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", 
-                           "I", "j", "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", 
-                           "r", "R", "s", "S", "t", "T", "u", "U", "v", "V", "w", "W", "x", "X", "y", "Y", "z", 
-                           "Z")
+class CopticTransliterator:
+    def __init__(self):
+        # Basic character mappings
+        self.char_map = {
+            "ⲁ": "a",
+            "Ⲁ": "A",
+            "ⲃ": "b",
+            "Ⲃ": "B",
+            "ⲅ": "g",
+            "Ⲅ": "G",
+            "ⲇ": "d",
+            "Ⲇ": "D",
+            "ⲉ": "e",
+            "Ⲉ": "E",
+            "ⲋ": "f",
+            "Ⲋ": "F",
+            "ⲍ": "z",
+            "Ⲍ": "Z",
+            "ⲏ": "i",
+            "Ⲏ": "I",
+            "ⲑ": "th",
+            "Ⲑ": "TH",
+            "ⲓ": "i",
+            "Ⲓ": "I",
+            "ⲕ": "k",
+            "Ⲕ": "K",
+            "ⲗ": "l",
+            "Ⲗ": "L",
+            "ⲙ": "m",
+            "Ⲙ": "M",
+            "ⲛ": "n",
+            "Ⲛ": "N",
+            "ⲝ": "x",
+            "Ⲝ": "X",
+            "ⲟ": "o",
+            "Ⲟ": "O",
+            "ⲡ": "p",
+            "Ⲡ": "P",
+            "ⲣ": "r",
+            "Ⲣ": "R",
+            "ⲥ": "s",
+            "Ⲥ": "S",
+            "ⲧ": "t",
+            "Ⲧ": "T",
+            "ⲩ": "u",
+            "Ⲩ": "U",
+            "ⲫ": "ph",
+            "Ⲫ": "PH",
+            "ⲭ": "ch",
+            "Ⲭ": "CH",
+            "ⲯ": "ps",
+            "Ⲯ": "PS",
+            "ⲱ": "o",
+            "Ⲱ": "O",
+            "ϣ": "sh",
+            "Ϣ": "SH",
+            "ϥ": "f",
+            "Ϥ": "F",
+            "ϧ": "kh",
+            "Ϧ": "KH",
+            "ϩ": "h",
+            "Ϩ": "H",
+            "ϫ": "j",
+            "Ϫ": "J",
+            "ϭ": "ky",
+            "Ϭ": "KY",
+            "ϯ": "ti",
+            "Ϯ": "TI",
+        }
 
-punct_whitespace_sigma = pynini.union(r"!", r'"', r"#", r"$", r"%", r"&", r"'", r"(", r")", r"*",
-                                      r"+", r",", r"-", r".", r"/", r":", r"<", r"=", r">", r"?",
-                                      r"@", r"\[", r"\\", r"\]", r"^", r"_", r"`", r"{", r"|",
-                                      r"}", r"~", " ", "\t", "\n", "\r")
+    def translit(self, text):
+        """
+        Transliterate Coptic text to Latin script
+        """
+        # Normalize input to decompose combining characters
+        text = unicodedata.normalize("NFKD", text)
+        # Remove combining diacritics (e.g., supralinear stroke)
+        text = "".join(c for c in text if not unicodedata.combining(c))
+        # Apply contextual rules first (similar to original pynini rules)
+        result = self._apply_contextual_rules(text.lower())
 
-wb = "[WB]"
+        # Apply basic character mappings
+        for coptic_char, latin_char in self.char_map.items():
+            result = result.replace(coptic_char.lower(), latin_char.lower())
 
-ipa_sigma = pynini.union("æ", "ə", "ɛ", "ɑː")
+        # Replace any remaining unmapped Coptic characters with a placeholder or warning
+        unmapped = "".join(c for c in result if ord(c) >= 0x2C80 and ord(c) <= 0x2CFF)
+        if unmapped:
+            print(f"Warning: Unmapped Coptic characters found: {unmapped}")
+        return result
 
-vowels = pynini.union("ⲁ", "Ⲁ", "ⲟ", "Ⲟ", "ⲱ", "Ⲱ", "ⲓ", "Ⲓ", "ⲏ", "Ⲏ", "ⲉ", "Ⲉ")
+    def _apply_contextual_rules(self, text):
+        """
+        Apply context-sensitive transliteration rules
+        """
+        # Alpha contextual rules
+        text = re.sub(r"ⲁ(?=ⲥ\b)", "æ", text)  # ⲁ -> æ before ⲥ at word boundary
+        text = re.sub(r"ⲁ(?=\b)", "ə", text)  # ⲁ -> ə at word boundary
+        text = re.sub(r"ⲁ", "ɑː", text)  # ⲁ -> ɑː elsewhere
 
-sigma = pynini.union(coptic_sigma, latin_sigma, punct_whitespace_sigma, vowels, ipa_sigma, wb)
+        # Veeta (ⲃ) contextual rules
+        text = re.sub(r"ⲃ(?=ⲓⲙ\b)", "b", text)  # ⲃ -> b before ⲓⲙ at word boundary
+        text = re.sub(r"ⲃ(?=ⲧ\b)", "v", text)  # ⲃ -> v before ⲧ at word boundary
+        text = re.sub(r"ⲃ(?=[ⲁⲟⲱⲓⲏⲉ])", "v", text)  # ⲃ -> v before vowels
+        text = re.sub(r"ⲃ(?=ⲣ)", "b", text)  # ⲃ -> b before ⲣ
+        text = re.sub(r"ⲃ(?=ⲥ)", "b", text)  # ⲃ -> b before ⲥ
+        text = re.sub(r"ⲃ(?=\b)", "b", text)  # ⲃ -> b at word boundary
 
-sigma_star = pynini.closure(sigma)
+        # Gamma (ⲅ) contextual rules
+        text = re.sub(r"ⲅ(?=ⲅ)", "n", text)  # ⲅ -> n before ⲅ
+        text = re.sub(r"ⲅ(?=ⲓ)", "g", text)  # ⲅ -> g before ⲓ
+        text = re.sub(r"ⲅ(?=ⲉ)", "g", text)  # ⲅ -> g before ⲉ
+        text = re.sub(r"ⲅ", "gh", text)  # ⲅ -> gh elsewhere
 
-# Rules
-insert_wb = pynini.transducer("", "[WB]")
-rule_addwb_1 = pynini.cdrewrite(insert_wb, coptic_sigma, punct_whitespace_sigma, sigma_star)
-rule_addwb_2 = pynini.cdrewrite(insert_wb, punct_whitespace_sigma, coptic_sigma, sigma_star)
+        # Eeta (ⲏ) contextual rules
+        text = re.sub(r"ⲉ(ⲏ)", r"ey", text)  # ⲉⲏ -> ey
 
-rule_removewb = pynini.cdrewrite(pynini.transducer("[WB]", ""), "", "", sigma_star)
+        # Ei contextual rules
+        text = re.sub(r"ⲉ(?=ⲟ)", "eɪ", text)  # ⲉ -> eɪ before ⲟ
+        text = re.sub(r"ⲏ", "ee", text)  # ⲏ -> ee (general case)
 
-# Alpha
-alphatoa_1 = pynini.transducer("ⲁ", "æ")
-rule_1 = pynini.cdrewrite(alphatoa_1, "", "ⲥ[WB]", sigma_star)
+        # Multi-character sequences
+        text = re.sub(r"ⲕⲕ", "kk", text)
+        text = re.sub(r"ⲙⲙ", "mm", text)
+        text = re.sub(r"ⲛⲛ", "nn", text)
+        text = re.sub(r"ⲟⲓⲁ", "ia", text)
+        text = re.sub(r"ⲟⲩⲱ", "o'o", text)
 
-alphatoa_2 = pynini.transducer("ⲁ", "ə")
-rule_2 = pynini.cdrewrite(alphatoa_2, "", wb, sigma_star)
+        return text
 
-alphatoa_3 = pynini.transducer("ⲁ", "ɛ")
-# rule_3 not defined in original code
-alphatoa_4 = pynini.transducer("ⲁ", "ɑː")
-rule_4 = pynini.cdrewrite(alphatoa_4, "", "", sigma_star)
 
-# Veeta
-veetatov = pynini.transducer("ⲃ", "v")
-veetatob = pynini.transducer("ⲃ", "b")
-rule_5 = pynini.cdrewrite(veetatob, "", "ⲓⲙ[WB]", sigma_star)
-rule_6 = pynini.cdrewrite(veetatov, "", "ⲧ[WB]", sigma_star)
-rule_7 = pynini.cdrewrite(veetatov, "", vowels, sigma_star)
-rule_8 = pynini.cdrewrite(veetatob, "", "ⲣ", sigma_star)
-rule_9 = pynini.cdrewrite(veetatob, "", "ⲥ", sigma_star)
-rule_10 = pynini.cdrewrite(veetatob, "", wb, sigma_star)
+# Create instance for easy use
+transliterator = CopticTransliterator()
 
-# Gamma
-gammaton = pynini.transducer("ⲅ", "n")
-rule_11 = pynini.cdrewrite(gammaton, "", "ⲅ", sigma_star)
-
-gammatog = pynini.transducer("ⲅ", "g")
-rule_12 = pynini.cdrewrite(gammatog, "", "ⲓ", sigma_star)
-rule_13 = pynini.cdrewrite(gammatog, "", "ⲉ", sigma_star)
-
-gammatogh = pynini.transducer("ⲅ", "gh")
-rule_14 = pynini.cdrewrite(gammatogh, "", "", sigma_star)
-
-# Delta
-deltatoth = pynini.transducer("ⲇ", "th")
-# rule_15 not defined in original code
-deltatod = pynini.transducer("ⲇ", "d")
-# rule_16 not defined in original code
-
-# Eeta
-eetatoy = pynini.transducer("ⲏ", "y")
-rule_18 = pynini.cdrewrite(eetatoy, "ⲉ", "", sigma_star)
-
-# Ei
-eitoe_1 = pynini.transducer("ⲉ", "eɪ")
-rule_19 = pynini.cdrewrite(eitoe_1, "", "ⲟ", sigma_star)
-
-eitoe_2 = pynini.transducer("ⲉ", "e")
-rule_20 = pynini.cdrewrite(eitoe_2, "", "", sigma_star)
-
-eetatoee = pynini.transducer("ⲏ", "ee")
-rule_21 = pynini.cdrewrite(eetatoee, "", "", sigma_star)
-
-# 1:1 mappings
-onetoone_1 = pynini.transducer("ⲁ", "a")
-rule_onetoone_1 = pynini.cdrewrite(onetoone_1, "", "", sigma_star)
-
-onetoone_2 = pynini.transducer("ⲗ", "l")
-rule_onetoone_2 = pynini.cdrewrite(onetoone_2, "", "", sigma_star)
-
-onetoone_3 = pynini.transducer("ⲣ", "r")
-rule_onetoone_3 = pynini.cdrewrite(onetoone_3, "", "", sigma_star)
-
-onetoone_4 = pynini.transducer("ⲛ", "n")
-rule_onetoone_4 = pynini.cdrewrite(onetoone_4, "", "", sigma_star)
-
-onetoone_5 = pynini.transducer("ⲥ", "s")
-rule_onetoone_5 = pynini.cdrewrite(onetoone_5, "", "", sigma_star)
-
-onetoone_6 = pynini.transducer("ⲙ", "m")
-rule_onetoone_6 = pynini.cdrewrite(onetoone_6, "", "", sigma_star)
-
-onetoone_7 = pynini.transducer("ϣ", "sh")
-rule_onetoone_7 = pynini.cdrewrite(onetoone_7, "", "", sigma_star)
-
-onetoone_8 = pynini.transducer("ⲕ", "k")
-rule_onetoone_8 = pynini.cdrewrite(onetoone_8, "", "", sigma_star)
-
-onetoone_9 = pynini.transducer("ⲓ", "i")
-rule_onetoone_9 = pynini.cdrewrite(onetoone_9, "", "", sigma_star)
-
-onetoone_10 = pynini.transducer("ⲉ", "e")
-rule_onetoone_10 = pynini.cdrewrite(onetoone_10, "", "", sigma_star)
-
-onetoone_11 = pynini.transducer("ⲏ", "i")
-rule_onetoone_11 = pynini.cdrewrite(onetoone_11, "", "", sigma_star)
-
-onetoone_12 = pynini.transducer("ϩ", "h")
-rule_onetoone_12 = pynini.cdrewrite(onetoone_12, "", "", sigma_star)
-
-onetoone_13 = pynini.transducer("ⲧ", "t")
-rule_onetoone_13 = pynini.cdrewrite(onetoone_13, "", "", sigma_star)
-
-onetoone_14 = pynini.transducer("ϯ", "ti")
-rule_onetoone_14 = pynini.cdrewrite(onetoone_14, "", "", sigma_star)
-
-onetoone_15 = pynini.transducer("ϧ", "kh")
-rule_onetoone_15 = pynini.cdrewrite(onetoone_15, "", "", sigma_star)
-
-onetoone_16 = pynini.transducer("ⲫ", "ph")
-rule_onetoone_16 = pynini.cdrewrite(onetoone_16, "", "", sigma_star)
-
-onetoone_17 = pynini.transducer("ϥ", "f")
-rule_onetoone_17 = pynini.cdrewrite(onetoone_17, "", "", sigma_star)
-
-onetoone_18 = pynini.transducer("ⲍ", "z")
-rule_onetoone_18 = pynini.cdrewrite(onetoone_18, "", "", sigma_star)
-
-onetoone_19 = pynini.transducer("ⲝ", "x")
-rule_onetoone_19 = pynini.cdrewrite(onetoone_19, "", "", sigma_star)
-
-onetoone_20 = pynini.transducer("ⲱ", "o")
-rule_onetoone_20 = pynini.cdrewrite(onetoone_20, "", "", sigma_star)
-
-onetoone_21 = pynini.transducer("ⲡ", "p")
-rule_onetoone_21 = pynini.cdrewrite(onetoone_21, "", "", sigma_star)
-
-onetoone_22 = pynini.transducer("ⲯ", "ps")
-rule_onetoone_22 = pynini.cdrewrite(onetoone_22, "", "", sigma_star)
-
-onetoone_23 = pynini.transducer("ⲕⲕ", "kk")
-rule_onetoone_23 = pynini.cdrewrite(onetoone_23, "", "", sigma_star)
-
-onetoone_24 = pynini.transducer("ⲙⲙ", "mm")
-rule_onetoone_24 = pynini.cdrewrite(onetoone_24, "", "", sigma_star)
-
-onetoone_25 = pynini.transducer("ⲛⲛ", "nn")
-rule_onetoone_25 = pynini.cdrewrite(onetoone_25, "", "", sigma_star)
-
-onetoone_26 = pynini.transducer("ⲟⲓⲁ", "ia")
-rule_onetoone_26 = pynini.cdrewrite(onetoone_26, "", "", sigma_star)
-
-onetoone_27 = pynini.transducer("ⲟⲩⲱ", "o'o")
-rule_onetoone_27 = pynini.cdrewrite(onetoone_27, "", "", sigma_star)
-
-onetoone_28 = pynini.transducer("ⲃ", "b")
-rule_onetoone_28 = pynini.cdrewrite(onetoone_28, "", "", sigma_star)
-
-onetoone_29 = pynini.transducer("ⲅ", "g")
-rule_onetoone_29 = pynini.cdrewrite(onetoone_29, "", "", sigma_star)
-
-onetoone_30 = pynini.transducer("ⲇ", "d")
-rule_onetoone_30 = pynini.cdrewrite(onetoone_30, "", "", sigma_star)
-
-onetoone_31 = pynini.transducer("ⲑ", "th")
-rule_onetoone_31 = pynini.cdrewrite(onetoone_31, "", "", sigma_star)
-
-onetoone_32 = pynini.transducer("ⲟ", "o")
-rule_onetoone_32 = pynini.cdrewrite(onetoone_32, "", "", sigma_star)
-
-onetoone_33 = pynini.transducer("ⲩ", "u")
-rule_onetoone_33 = pynini.cdrewrite(onetoone_33, "", "", sigma_star)
-
-onetoone_34 = pynini.transducer("ⲭ", "ch")
-rule_onetoone_34 = pynini.cdrewrite(onetoone_34, "", "", sigma_star)
-
-onetoone_35 = pynini.transducer("ϭ", "ky")
-rule_onetoone_35 = pynini.cdrewrite(onetoone_35, "", "", sigma_star)
-
-# Cascade
-cascade = pynini.optimize(
-    rule_addwb_1@rule_addwb_2@rule_1@rule_2@rule_4@rule_5@
-    rule_6@rule_7@rule_8@rule_9@rule_10@rule_11@rule_12@
-    rule_13@rule_14@rule_18@rule_19@rule_20@rule_21@
-    rule_onetoone_1@rule_onetoone_2@rule_onetoone_3@
-    rule_onetoone_4@rule_onetoone_5@rule_onetoone_6@
-    rule_onetoone_7@rule_onetoone_8@rule_onetoone_9@
-    rule_onetoone_10@rule_onetoone_11@rule_onetoone_12@
-    rule_onetoone_13@rule_onetoone_14@rule_onetoone_15@
-    rule_onetoone_16@rule_onetoone_17@rule_onetoone_18@
-    rule_onetoone_19@rule_onetoone_20@rule_onetoone_21@
-    rule_onetoone_22@rule_onetoone_23@rule_onetoone_24@
-    rule_onetoone_25@rule_onetoone_26@rule_onetoone_27@
-    rule_onetoone_28@rule_onetoone_29@rule_onetoone_30@
-    rule_onetoone_31@rule_onetoone_32@rule_onetoone_33@
-    rule_onetoone_34@rule_onetoone_35@rule_removewb
-)
 
 def translit(text):
-    text = text.lower()
-    text = (text @ cascade)
-    return text.string()
+    return transliterator.translit(text)
+
+
+# Example usage
+if __name__ == "__main__":
+    # Test with some Coptic text
+    test_text = "ⲁⲛⲟⲕ ⲟⲩⲛ ⲟⲩⲙⲁⲓⲛⲟⲩⲧⲉ"
+    print(f"Original: {test_text}")
+    print(f"Transliterated: {translit(test_text)}")

@@ -1,0 +1,25 @@
+# Environment variables
+.env
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Streamlit specific files
+.streamlit/
+*.streamlit_cache/
+
+# Virtual environment
+venv/
+env/
+
+# Editor specific files
+.vscode/        # For VS Code
+.idea/          # For PyCharm/IntelliJ
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
