@@ -530,16 +530,13 @@ st.markdown(
 )
 
 with st.sidebar:
-    st.markdown("## 🔗 Quick Links")
-
     st.markdown(
         """
-    ### 📁 Source Code
     [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/shehatamichael/coptic-transliterator-llm)
-    
-    **[View Source Code →](https://github.com/shehatamichael/coptic-transliterator-llm)**
     """
     )
+
+    st.markdown("---")
 
     st.markdown(
         """
@@ -633,7 +630,7 @@ if "input_text" not in st.session_state:
 
 # Quick examples section
 st.markdown(
-    '<h2 class="section-header">✨ Try These Examples</h2>', unsafe_allow_html=True
+    '<h2 class="section-header">Try These Examples</h2>', unsafe_allow_html=True
 )
 
 # Force visibility for this section
@@ -668,7 +665,7 @@ st.markdown("</div>", unsafe_allow_html=True)  # Close the forced visibility div
 
 # MAIN INTERFACE
 st.markdown(
-    '<h2 class="section-header">🔄 Transliteration Interface</h2>',
+    '<h2 class="section-header">Transliteration Interface</h2>',
     unsafe_allow_html=True,
 )
 
@@ -938,7 +935,7 @@ with main_col2:
 
 # Instructions section
 st.markdown("---")
-st.markdown('<h2 class="section-header">📖 Instructions</h2>', unsafe_allow_html=True)
+st.markdown('<h2 class="section-header">Instructions</h2>', unsafe_allow_html=True)
 
 with st.expander("📖 How to Use This Tool", expanded=False):
     st.markdown(
