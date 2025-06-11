@@ -23,7 +23,7 @@
 ### Prerequisites
 
 - [Python 3.9+](https://www.python.org/downloads/)
-- Google AI Studio API key (for AI enhancement)
+- Google AI Studio API key (for AI enhancement - optional)
 
 ### Local Setup
 
@@ -34,11 +34,11 @@
    cd coptic-transliterator-llm
    ```
 
-2. **Create Environment**
+2. **Create Virtual Environment**
 
    ```bash
    python -m venv coptic-llm
-   source coptic-llm/bin/activate
+   source coptic-llm/bin/activate  # On Windows: coptic-llm\Scripts\activate
    ```
 
 3. **Install Dependencies**
@@ -55,7 +55,7 @@
      GEMINI_API_KEY=your-google-ai-api-key-here
      ```
 
-   - **Note**: The tool works without an API key using rule-based transliteration
+   - **Note**: The tool works without an API key using rule-based transliteration only
 
 5. **Launch the App**
 
@@ -64,43 +64,6 @@
    ```
 
    Your app will be available at `http://localhost:8501`
-
----
-
-## 🌐 Deploy to Netlify
-
-### Step-by-Step Deployment
-
-1. **Prepare Your Repository**
-   - Push your code to GitHub
-   - Ensure `netlify.toml` is in your root directory
-   - Verify all dependencies are listed in `requirements.txt`
-
-2. **Connect to Netlify**
-   - Log in to [Netlify](https://netlify.com)
-   - Click "New site from Git"
-   - Select your GitHub repository
-
-3. **Configure Environment Variables (Optional)**
-   - Go to Site settings → Build & deploy → Environment variables
-   - Add your Google AI Studio API key for AI enhancement:
-
-     ```
-     Key: GEMINI_API_KEY
-     Value: your-google-ai-api-key-here
-     ```
-
-4. **Deploy**
-   - Netlify will automatically build and deploy using `netlify.toml`
-   - Your app will be live at `https://your-app-name.netlify.app`
-
-### Deployment Configuration
-
-The repository includes a `netlify.toml` file that handles:
-
-- Python runtime setup
-- Dependency installation
-- Streamlit app startup via Netlify Functions
 
 ---
 
@@ -117,7 +80,6 @@ The repository includes a `netlify.toml` file that handles:
 - **Frontend**: Streamlit provides the web interface with side-by-side comparison
 - **Core Logic**: Rule-based transliteration ensures reliability
 - **Enhancement**: Gemini 2.0 Flash Lite model via Google AI Studio API
-- **Hosting**: Netlify for free, scalable deployment
 
 ---
 
@@ -128,7 +90,6 @@ coptic-transliterator-llm/
 ├── app.py                 # Main Streamlit application
 ├── transliterator.py      # Core transliteration logic
 ├── requirements.txt       # Python dependencies
-├── netlify.toml          # Netlify deployment config
 ├── .env.example          # Environment variables template
 ├── LICENSE               # MIT License
 └── README.md             # This file
@@ -179,22 +140,51 @@ print(latin_text)  # Output: pnoute
 
 ## 📊 Performance & Limitations
 
-### Free Tier Considerations
+### AI Enhancement Notes
 
-- **Google AI Studio**: Generous free tier with rate limits
-- **Netlify**: 300 build minutes/month, 100GB bandwidth
-- **Fallback**: Rule-based method always available when API is unavailable
+- **Google AI Studio**: Uses generous free tier with rate limits
+- **Fallback**: Rule-based method always available when AI is unavailable
+- **Accuracy**: AI enhancement improves context-aware transliteration
+- **Performance**: Rule-based is instant, AI enhancement takes 2-5 seconds
 
-### Accuracy Notes
+### Accuracy Comparison
 
 - Rule-based transliteration provides consistent, fast results
-- AI enhancement improves context-aware transliteration
+- AI enhancement improves context-aware transliteration for complex texts
 - Side-by-side comparison lets users choose the best result
 - Performance varies with input complexity and model availability
 
 ---
 
+## 📚 Examples
+
+### Quick Examples
+
+| Coptic | Rule-based | AI-Enhanced | Meaning |
+|--------|------------|-------------|---------|
+| ⲡⲛⲟⲩⲧⲉ | pnoute | pnoute | God |
+| ⲧⲉⲕⲕⲗⲏⲥⲓⲁ | tekklesia | tekklesia | Church |
+| ⲁⲅⲁⲡⲏ | agape | agape | Love |
+| ⲙⲁⲣⲓⲁ | maria | maria | Mary |
+
+### Usage in Code
+
+```python
+from transliterator import CopticTransliterator
+
+# Create transliterator instance
+ct = CopticTransliterator()
+
+# Transliterate text
+result = ct.translit("ⲁⲛⲟⲕ ⲟⲩⲛ ⲟⲩⲙⲁⲓⲛⲟⲩⲧⲉ")
+print(result)  # Output: anok oun oumai̇noute
+```
+
+---
+
 ## 🤝 Contributing
+
+### Getting Started
 
 1. **Fork the Repository**
 2. **Create a Feature Branch**
@@ -224,34 +214,8 @@ print(latin_text)  # Output: pnoute
 - Additional contextual transliteration rules
 - Support for other Coptic dialects
 - Batch processing for large texts
-- API endpoint creation
 - Performance optimizations
-
----
-
-## 📚 Examples
-
-### Quick Examples
-
-| Coptic | Transliteration | Meaning |
-|--------|----------------|---------|
-| ⲡⲛⲟⲩⲧⲉ | pnoute | God |
-| ⲧⲉⲕⲕⲗⲏⲥⲓⲁ | tekklesia | Church |
-| ⲁⲅⲁⲡⲏ | agape | Love |
-| ⲙⲁⲣⲓⲁ | maria | Mary |
-
-### Usage in Code
-
-```python
-from transliterator import CopticTransliterator
-
-# Create transliterator instance
-ct = CopticTransliterator()
-
-# Transliterate text
-result = ct.translit("ⲁⲛⲟⲕ ⲟⲩⲛ ⲟⲩⲙⲁⲓⲛⲟⲩⲧⲉ")
-print(result)  # Output: anok oun oumai̇noute
-```
+- Enhanced error handling
 
 ---
 
@@ -273,7 +237,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Based on the original [coptic-transliterator](https://github.com/shehatamichael/coptic-transliterator)
 - Powered by [Google AI Studio](https://makersuite.google.com/)
-- Hosted on [Netlify](https://netlify.com/)
 - Built with [Streamlit](https://streamlit.io/)
 - Special thanks to the Coptic community for feedback and support
 

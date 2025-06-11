@@ -13,10 +13,29 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()  # Load environment variables from .env file
 
+# Get API key from Streamlit secrets or environment variables
+try:
+    # Try Streamlit secrets first (for deployed app)
+    if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
+        GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+        logger.info("GEMINI_API_KEY loaded from Streamlit secrets")
+    # Fallback to environment variable (for local development)
+    elif "GEMINI_API_KEY" in os.environ:
+        GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+        logger.info("GEMINI_API_KEY loaded from environment variable")
+    else:
+        GEMINI_API_KEY = None
+        logger.error("GEMINI_API_KEY not found in secrets or environment variables")
+        st.error("⚠️ API key not configured. Please contact the administrator.")
+        st.stop()
+
+except Exception as e:
+    logger.error(f"Error loading API key: {str(e)}")
+    st.error("⚠️ Error loading API configuration. Please contact the administrator.")
+    st.stop()
+
 # Google AI Studio API configuration
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite-001:generateContent"  # Adjust endpoint based on Google's latest API
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-logger.debug(f"GEMINI_API_KEY loaded: {GEMINI_API_KEY[:4]}...{GEMINI_API_KEY[-4:]}")
 
 
 # Cache for API responses to improve performance
