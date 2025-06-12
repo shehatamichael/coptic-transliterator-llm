@@ -629,9 +629,8 @@ if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 
 # Quick examples section
-st.markdown(
-    '<h2 class="section-header">Try These Examples</h2>', unsafe_allow_html=True
-)
+st.markdown("#### ✨ Try These Examples")
+st.markdown("---")
 
 # Force visibility for this section
 st.markdown(
@@ -664,16 +663,15 @@ for i, (coptic, english) in enumerate(example_texts):
 st.markdown("</div>", unsafe_allow_html=True)  # Close the forced visibility div
 
 # MAIN INTERFACE
-st.markdown(
-    '<h2 class="section-header">Transliteration Interface</h2>',
-    unsafe_allow_html=True,
-)
+st.markdown("---")
+st.markdown("#### 🔄 Transliteration Interface")
+st.markdown("---")
 
 # Create two main columns: Input (left) and Results (right)
 main_col1, main_col2 = st.columns([1, 1])
 
 with main_col1:
-    st.markdown("### 📝 Input")
+    st.markdown("##### 📝 Input")
 
     # Text input with session state management
     input_text = st.text_area(
@@ -782,7 +780,7 @@ with main_col1:
             st.warning("⚠️ Please provide input text or upload a file.")
 
 with main_col2:
-    st.markdown("### 📊 Results")
+    st.markdown("##### 📊 Results")
 
     # Display results if they exist
     if "results" in st.session_state and st.session_state.results.get(
@@ -935,7 +933,7 @@ with main_col2:
 
 # Instructions section
 st.markdown("---")
-st.markdown('<h2 class="section-header">Instructions</h2>', unsafe_allow_html=True)
+st.markdown("### 📖 Instructions")
 
 with st.expander("📖 How to Use This Tool", expanded=False):
     st.markdown(
