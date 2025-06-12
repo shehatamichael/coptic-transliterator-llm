@@ -1,6 +1,6 @@
 # 🔤 Coptic Transliteration Tool with AI Enhancement
 
-> A modern web-based tool for transliterating Coptic text to Latin script, enhanced with Google's Gemini 2.0 Flash Lite AI model.
+> A modern web-based tool for transliterating Coptic text to Latin script, enhanced with Google's Gemini 2.0 Flash Lite AI model. **Live Application:** (https://coptic-transliterator-llm.streamlit.app/)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
